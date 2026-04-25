@@ -1,0 +1,9 @@
+key,type,encoding,value
+WIFI,namespace,,
+SSID,data,string,YOUR_WIFI_NAME
+PSK,data,string,YOUR_WIFI_PASSWORD
+SERVER,namespace,,
+URL,data,string,ws://YOUR_ALEXA_SERVER_IP:YOUR_ALEXA_SERVER_PORT/ws
+
+
+

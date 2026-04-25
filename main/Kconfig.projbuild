@@ -1,0 +1,53 @@
+menu "Alexa Configuration"
+
+config WIFI_SSID
+    string "WiFi SSID"
+    default "myssid"
+    help
+        SSID (network name) to connect to.
+
+config WIFI_PASSWORD
+    string "WiFi Password"
+    default "mypassword"
+    help
+        WiFi password (WPA, WPA2, WPA3).
+
+config ALEXA_SERVER_URL
+    string "Server WebSocket URL"
+    default "ws://YOUR_SERVER_IP:8080"
+    help
+        WebSocket URL for the backend server. Supports WS and WSS.
+
+    menu "Debugging"
+
+    config WILLOW_DEBUG_LOG
+        bool "Debug logging"
+        help
+            Set all log levels to debug
+
+    config WILLOW_DEBUG_MEM
+        bool "Debug memory"
+        help
+            Periodically print memory debugging information
+
+    config WILLOW_DEBUG_RUNTIME_STATS
+        bool "Debug runtime stats"
+        select FREERTOS_GENERATE_RUN_TIME_STATS
+        help
+            Periodically print runtime stats
+
+    config WILLOW_DEBUG_TASKS
+        bool "Debug tasks"
+        select FREERTOS_USE_STATS_FORMATTING_FUNCTIONS
+        select FREERTOS_USE_TRACE_FACILITY
+        help
+            Periodically print task list
+
+    config WILLOW_DEBUG_TIMERS
+        bool "Debug timers"
+        help
+            Periodically print timer information
+
+    endmenu
+
+endmenu

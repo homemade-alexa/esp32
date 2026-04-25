@@ -1,0 +1,3 @@
+#define DEFAULT_DISPLAY_TIMEOUT   10
+#define DEFAULT_LISTEN_TIMEOUT    5
+#define DEFAULT_MIC_GAIN          14

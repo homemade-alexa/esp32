@@ -1,0 +1,12 @@
+build/
+managed_components/
+sdkconfig
+sdkconfig.old
+dependencies.lock
+*.pyc
+__pycache__/
+.env
+CLAUDE.md
+deps
+nvs.csv
+.DS_Store
