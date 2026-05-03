@@ -96,27 +96,22 @@ Navigate to *Alexa Configuration* and set:
 
 These values are stored in `sdkconfig` (gitignored) and baked into the firmware at build time.
 
-### Runtime overrides (NVS)
+## Tools
 
-NVS values take precedence over Kconfig defaults and can be updated without rebuilding. Edit `nvs.csv`:
+The `tools/` directory contains optional utilities not required for a standard setup.
 
-```csv
-key,type,encoding,value
-WIFI,namespace,,
-SSID,data,string,your_network_name
-PSK,data,string,your_wifi_password
-SERVER,namespace,,
-URL,data,string,ws://YOUR_SERVER_IP:8080/ws/internal
-```
+### NVS runtime override
 
-After editing, flash only the NVS partition without a full reflash:
+NVS values take precedence over Kconfig defaults and allow reconfiguring the device without rebuilding — useful for changing WiFi credentials in the field.
 
 ```bash
+cp tools/nvs.csv.example tools/nvs.csv
+# edit tools/nvs.csv
 export PORT=/dev/ttyUSB0
-./build_nvs.sh
+./tools/build_nvs.sh
 ```
 
-The script generates `build/alexa_nvs.bin` and flashes it at address `0x9000`.
+`tools/nvs.csv` is gitignored. The script generates `build/alexa_nvs.bin` and flashes it at address `0x9000`.
 
 ## Voice capture parameters
 

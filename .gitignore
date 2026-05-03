@@ -8,5 +8,5 @@ __pycache__/
 .env
 CLAUDE.md
 deps
-nvs.csv
+tools/nvs.csv
 .DS_Store
