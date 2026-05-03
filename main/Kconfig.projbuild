@@ -12,11 +12,13 @@ config WIFI_PASSWORD
     help
         WiFi password (WPA, WPA2, WPA3).
 
-config ALEXA_SERVER_URL
-    string "Server WebSocket URL"
-    default "ws://YOUR_SERVER_IP:8080"
+config SERVER_HOST
+    string "Server host and port"
+    default "YOUR_SERVER_IP:8080"
     help
-        WebSocket URL for the backend server. Supports WS and WSS.
+        Host and port of the backend server (e.g. 192.168.0.144:8080).
+        Used to construct the WebSocket URL (ws://<host>/ws/internal)
+        and the STT endpoint (http://<host>/api/internal/stt).
 
     menu "Debugging"
 

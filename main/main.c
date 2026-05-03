@@ -22,8 +22,7 @@
 #include "timer.h"
 #include "ui.h"
 
-#define PARTLABEL_USER     "user"
-#define DEFAULT_SERVER_URL "ws://YOUR_SERVER_IP:8080/ws/internal"
+#define PARTLABEL_USER "user"
 
 char server_url[2048];
 static const char *TAG = "ALEXA/MAIN";
@@ -103,13 +102,13 @@ void app_main(void)
 
     err = nvs_open("SERVER", NVS_READONLY, &hdl_nvs);
     if (err != ESP_OK) {
-        ESP_LOGW(TAG, "SERVER not in NVS, using default: %s", DEFAULT_SERVER_URL);
-        strncpy(server_url, DEFAULT_SERVER_URL, sizeof(server_url) - 1);
+        ESP_LOGW(TAG, "SERVER not in NVS, using default: %s", "ws://" CONFIG_SERVER_HOST "/ws/internal");
+        strncpy(server_url, "ws://" CONFIG_SERVER_HOST "/ws/internal", sizeof(server_url) - 1);
     } else {
         sz = sizeof(server_url);
         if (nvs_get_str(hdl_nvs, "URL", server_url, &sz) != ESP_OK) {
-            ESP_LOGW(TAG, "server URL not in NVS, using default: %s", DEFAULT_SERVER_URL);
-            strncpy(server_url, DEFAULT_SERVER_URL, sizeof(server_url) - 1);
+            ESP_LOGW(TAG, "server URL not in NVS, using default: %s", "ws://" CONFIG_SERVER_HOST "/ws/internal");
+            strncpy(server_url, "ws://" CONFIG_SERVER_HOST "/ws/internal", sizeof(server_url) - 1);
         }
     }
 

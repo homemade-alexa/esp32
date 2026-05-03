@@ -1,8 +1,8 @@
-# Homemade Alexa ESP32S3-Box-3
+# Homemade Alexa ESP32-S3-Box3
 
-Voice assistant firmware for ESP32S3-Box-3. Detects the "Alexa" wake word, records speech, sends PCM to an STT server, and reacts to commands over WebSocket.
+Voice assistant firmware for ESP32-S3-Box3. Detects the "Alexa" wake word, records speech, sends PCM to an STT server, and reacts to commands over WebSocket.
 
-> This project is heavily based on [Willow](https://github.com/HeyWillow/willow) — an open-source voice assistant firmware for ESP32S3-Box-3. The build system, audio pipeline, and hardware abstraction layer are derived from that project.
+> This project is heavily based on [Willow](https://github.com/HeyWillow/willow) — an open-source voice assistant firmware for ESP32-S3-Box3. The build system, audio pipeline, and hardware abstraction layer are derived from that project.
 
 ## Requirements
 
@@ -12,12 +12,12 @@ Voice assistant firmware for ESP32S3-Box-3. Detects the "Alexa" wake word, recor
 
 ### Python environment setup
 
-```bash
-pip install -r requirements.txt
-source venv/bin/activate
-```
-
 > Required before using `utils.sh flash`, `flash-app`, `erase-flash`, `monitor`, and `build_nvs.sh`.
+
+```bash
+source venv/bin/activate
+pip install -r requirements.txt
+```
 
 ## `utils.sh` tool
 
@@ -25,15 +25,15 @@ All build and flash operations are handled by `./utils.sh <command>`:
 
 | Command | Description |
 |---------|-------------|
-| `setup` | Initializes sdkconfig (once, before the first build; requires the container) |
+| `setup` | Initializes sdkconfig (once, before the first build; automatically starts the Docker container) |
 | `build` | Builds the firmware (automatically starts the Docker container) |
-| `config` | Opens menuconfig (requires the container) |
+| `config` | Opens menuconfig (automatically starts the Docker container) |
 | `clean` | Cleans the `build/` directory |
-| `docker` | Enters the Docker container interactively |
 | `flash` | Flashes the full firmware (requires `PORT`) |
 | `flash-app` | Flashes only the app binary — faster for code-only changes (requires `PORT`) |
 | `erase-flash` | Erases the entire flash (requires `PORT`; must be run before the first `flash`) |
 | `monitor` | Attaches the `tio` serial monitor (requires `PORT`) |
+| `docker` | Enters the Docker container interactively |
 
 ## Building
 
@@ -48,9 +48,8 @@ The resulting firmware is placed in `build/alexa.bin`.
 ### First build (clean environment)
 
 ```bash
-./utils.sh docker        # enter the container
 ./utils.sh setup         # set target to esp32s3, generate sdkconfig
-exit                     # leave the container
+./utils.sh config        # set WiFi credentials and server address
 ./utils.sh build         # build the firmware
 ```
 
@@ -77,9 +76,29 @@ After `flash` completes, the serial monitor (`tio`) starts automatically.
 ./utils.sh flash-app     # flashes only alexa.bin at address 0x30000
 ```
 
-## WiFi and server configuration (NVS)
+## WiFi and server configuration
 
-WiFi credentials and the server address are stored in the NVS partition. Edit `nvs.csv`:
+### Build-time defaults (Kconfig)
+
+WiFi credentials and server address are set before the first build via menuconfig:
+
+```bash
+./utils.sh config
+```
+
+Navigate to *Alexa Configuration* and set:
+
+| Option | Description |
+|--------|-------------|
+| `WIFI_SSID` | WiFi network name |
+| `WIFI_PASSWORD` | WiFi password |
+| `SERVER_HOST` | Server host and port (e.g. `192.168.0.144:8080`) |
+
+These values are stored in `sdkconfig` (gitignored) and baked into the firmware at build time.
+
+### Runtime overrides (NVS)
+
+NVS values take precedence over Kconfig defaults and can be updated without rebuilding. Edit `nvs.csv`:
 
 ```csv
 key,type,encoding,value
@@ -99,8 +118,6 @@ export PORT=/dev/ttyUSB0
 
 The script generates `build/alexa_nvs.bin` and flashes it at address `0x9000`.
 
-> NVS values override the default `#define` constants in the source code.
-
 ## Voice capture parameters
 
 Key constants in `main/audio.c`:
@@ -108,18 +125,11 @@ Key constants in `main/audio.c`:
 | Constant | Value | Description |
 |----------|-------|-------------|
 | `DEFAULT_WAKE_WORD` | `"alexa"` | Wake word (WakeNet9 model) |
-| `DEFAULT_WAKE_MODE` | `"2CH_95"` | Detection mode: 2 microphones, 95% sensitivity |
+| `DEFAULT_WAKE_MODE` | `"2CH_90"` | Detection mode: 2 microphones, 90% sensitivity (lower = fewer false positives) |
 | `DEFAULT_VAD_MODE` | `2` | VAD aggressiveness (0–3; higher = more aggressive silence trimming) |
 | `DEFAULT_VAD_TIMEOUT` | `300` | Silence duration that ends recording [ms] |
 | `DEFAULT_RECORD_BUFFER` | `12` | Recording buffer size |
 | `DEFAULT_SPEAKER_VOLUME` | `60` | Volume (0–100) |
-| `DEFAULT_STT_URL` | `http://YOUR_SERVER_IP:8080/api/internal/stt` | STT endpoint |
-
-Timing constants in `main/main.c`:
-
-| Constant | Description |
-|----------|-------------|
-| `DEFAULT_SERVER_URL` | WebSocket server address |
 
 ## Communication flow
 

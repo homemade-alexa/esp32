@@ -43,9 +43,9 @@
 #define DEFAULT_STREAM_TIMEOUT  DEFAULT_LISTEN_TIMEOUT
 #define DEFAULT_VAD_MODE        2
 #define DEFAULT_VAD_TIMEOUT     750
-#define DEFAULT_WAKE_MODE       "2CH_95"
+#define DEFAULT_WAKE_MODE       "2CH_90"
 #define DEFAULT_WAKE_WORD       "alexa"
-#define DEFAULT_STT_URL         "http://YOUR_SERVER_IP:8080/api/internal/stt"
+#define DEFAULT_STT_URL         "http://" CONFIG_SERVER_HOST "/api/internal/stt"
 
 #define HTTP_STREAM_TIMEOUT_MS              2 * 1000
 #define HTTP_STREAM_TIMEOUT_MS_POST_REQUEST 30 * 1000

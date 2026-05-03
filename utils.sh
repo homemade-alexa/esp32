@@ -105,6 +105,17 @@ docker_run() {
         bash
 }
 
+docker_setup() {
+    docker run -it --rm \
+        -v "$ALEXA_PATH":/alexa \
+        -v "$ADF_REAL_PATH":/esp-adf \
+        -e ADF_PATH=/esp-adf \
+        -w /alexa \
+        --name "$DOCKER_NAME" \
+        "$DOCKER_IMAGE" \
+        bash -c "./utils.sh setup"
+}
+
 docker_build() {
     docker run -it --rm \
         -v "$ALEXA_PATH":/alexa \
@@ -116,6 +127,17 @@ docker_build() {
         bash -c "./utils.sh build"
 }
 
+docker_config() {
+    docker run -it --rm \
+        -v "$ALEXA_PATH":/alexa \
+        -v "$ADF_REAL_PATH":/esp-adf \
+        -e ADF_PATH=/esp-adf \
+        -w /alexa \
+        --name "$DOCKER_NAME" \
+        "$DOCKER_IMAGE" \
+        bash -c "./utils.sh config"
+}
+
 build() {
     if [ -z "$container" ]; then
         docker_build
@@ -125,27 +147,31 @@ build() {
     idf.py build
 }
 
+config() {
+    if [ -z "$container" ]; then
+        docker_config
+        return
+    fi
+    export ADF_PATH=/esp-adf
+    idf.py menuconfig
+}
+
 case "$1" in
     setup)
-        if [ -z "$IDF_PATH" ]; then
-            echo "IDF_PATH not set - are you inside the Docker container?"
-            exit 1
+        if [ -z "$container" ]; then
+            docker_setup
+        else
+            export ADF_PATH=/esp-adf
+            echo "Setting target to esp32s3..."
+            idf.py set-target esp32s3
+            echo "Setup done. You can now run: ./utils.sh config or ./utils.sh build"
         fi
-        export ADF_PATH=/esp-adf
-        echo "Setting target to esp32s3..."
-        idf.py set-target esp32s3
-        echo "Setup done. You can now run: ./utils.sh config or ./utils.sh build"
         ;;
     build)
         build
         ;;
     config)
-        if [ -z "$IDF_PATH" ]; then
-            echo "IDF_PATH not set - are you inside the Docker container?"
-            exit 1
-        fi
-        export ADF_PATH=/esp-adf
-        idf.py menuconfig
+        config
         ;;
     clean)
         idf.py fullclean
@@ -169,6 +195,7 @@ case "$1" in
         check_tio
         check_flag "erase-flash"
         esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before default-reset --after hard-reset write-flash \
+            0x2d000 "$ALEXA_PATH/build/ota_data_initial.bin" \
             0x30000 "$ALEXA_PATH/build/alexa.bin"
         do_term
         ;;
