@@ -16,7 +16,7 @@ config SERVER_HOST
     string "Server host and port"
     default "YOUR_SERVER_IP:8080"
     help
-        Host and port of the backend server (e.g. 192.168.0.144:8080).
+        Host and port of the backend server (e.g. 192.168.1.144:8080).
         Used to construct the WebSocket URL (ws://<host>/ws/internal)
         and the STT endpoint (http://<host>/api/internal/stt).
 

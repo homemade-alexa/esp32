@@ -92,7 +92,7 @@ Navigate to *Alexa Configuration* and set:
 |--------|-------------|
 | `WIFI_SSID` | WiFi network name |
 | `WIFI_PASSWORD` | WiFi password |
-| `SERVER_HOST` | Server host and port (e.g. `192.168.0.144:8080`) |
+| `SERVER_HOST` | Server host and port (e.g. `192.168.1.144:8080`) |
 
 These values are stored in `sdkconfig` (gitignored) and baked into the firmware at build time.
 

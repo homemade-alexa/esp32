@@ -1,1 +1,2 @@
 esptool
+esp-idf-nvs-partition-gen
